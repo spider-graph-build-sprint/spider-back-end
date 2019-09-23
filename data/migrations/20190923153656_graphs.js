@@ -19,11 +19,23 @@ exports.up = function (knex) {
                 .onUpdate('CASCADE')
                 .onDelete('CASCADE');
         })
-        .createTable('legs', labels =>{
-            labels.increments();
-            labels.string('name', 128)
+        .createTable('legs', legs =>{
+            legs.increments();
+            legs.string('name', 128)
                 .notNullable();
-            labels.integer('graph_id', 128)
+            legs.integer('graph_id', 128)
+                .notNullable()
+                .unsigned()
+                .references('id')
+                .inTable('graphs')
+                .onUpdate('CASCADE')
+                .onDelete('CASCADE');
+        })
+        .createTable('datasets', datasets =>{
+            datasets.increments();
+            datasets.string('name', 128)
+                .notNullable();
+            datasets.integer('graph_id', 128)
                 .notNullable()
                 .unsigned()
                 .references('id')
@@ -35,4 +47,7 @@ exports.up = function (knex) {
 
 exports.down = function (knex) {
     return knex.schema.dropTableIfExists('users')
+        .dropTableIfExists('graphs')
+        .dropTableIfExists('legs')
+        .dropTableIfExists('datasets')
 };
