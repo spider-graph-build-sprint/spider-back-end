@@ -1,0 +1,33 @@
+{
+  "name": "spider-back-end",
+  "version": "1.0.0",
+  "description": "This is the back-end repository for the Build Sprint Project: Spider Graph",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "server": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spider-graph-build-sprint/spider-back-end.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/spider-graph-build-sprint/spider-back-end/issues"
+  },
+  "homepage": "https://github.com/spider-graph-build-sprint/spider-back-end#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "helmet": "^3.21.1",
+    "jsonwebtoken": "^8.5.1",
+    "knex": "^0.19.4",
+    "sqlite3": "^4.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.2"
+  }
+}
