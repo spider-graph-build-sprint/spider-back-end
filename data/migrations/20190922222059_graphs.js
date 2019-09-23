@@ -19,7 +19,7 @@ exports.up = function (knex) {
                 .onUpdate('CASCADE')
                 .onDelete('CASCADE');
         })
-        .createTable('labels', labels =>{
+        .createTable('legs', labels =>{
             labels.increments();
             labels.string('name', 128)
                 .notNullable();
