@@ -43,6 +43,18 @@ exports.up = function (knex) {
                 .onUpdate('CASCADE')
                 .onDelete('CASCADE');
         })
+        .createTable('points', points =>{
+            points.increments();
+            points.integer('data', 128)
+                .notNullable();
+            points.integer('dataset_id', 128)
+                .notNullable()
+                .unsigned()
+                .references('id')
+                .inTable('datasets')
+                .onUpdate('CASCADE')
+                .onDelete('CASCADE');
+        })
 };
 
 exports.down = function (knex) {
