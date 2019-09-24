@@ -57,6 +57,7 @@ router.delete('/:name', (req, res) => {
         .catch(err => res.status(500).json({error: "The graph could not be removed"}))
 });
 
+
 function validateGraphId(req, res, next) {
     const id = req.params.id;
 
