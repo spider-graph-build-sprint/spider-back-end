@@ -7,6 +7,7 @@ exports.up = function (knex) {
         users.string('password', 500)
             .notNullable();
     })
+
         .createTable('graphs', graphs => {
             graphs.increments();
             graphs.string('name', 128)
@@ -19,6 +20,7 @@ exports.up = function (knex) {
                 .onUpdate('CASCADE')
                 .onDelete('CASCADE');
         })
+
         .createTable('legs', legs =>{
             legs.increments();
             legs.string('name', 128)
@@ -31,6 +33,7 @@ exports.up = function (knex) {
                 .onUpdate('CASCADE')
                 .onDelete('CASCADE');
         })
+
         .createTable('datasets', datasets =>{
             datasets.increments();
             datasets.string('name', 128)
@@ -43,6 +46,7 @@ exports.up = function (knex) {
                 .onUpdate('CASCADE')
                 .onDelete('CASCADE');
         })
+
         .createTable('points', points =>{
             points.increments();
             points.integer('data', 128)
