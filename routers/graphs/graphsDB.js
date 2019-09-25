@@ -5,7 +5,8 @@ module.exports = {
     get,
     update,
     remove,
-    findBy
+    findBy,
+    getGraph
 };
 
 function findBy(filter) {
@@ -13,6 +14,13 @@ function findBy(filter) {
         .where(filter);
 }
 
+
+function getGraph(){
+    return db('points as p')
+        .join('datasets as ds', 'ds.id', 'p.dataset_id')
+        .join('graphs as g', 'g.id', 'ds.graph_id')
+        .select('g.name', 'ds.name')
+}
 
 //create graph
 function add(graph) {
@@ -28,19 +36,17 @@ function get() {
     return db('graphs');
 }
 
-//update graph
 function update(filter, changes) {
     return db('graphs')
         .where(filter)
         .update(changes)
 }
 
-
 async function remove(filter) {
-    const graph = await findBy({name: filter});
+    const graph = await findBy({name: filter.name});
     if (graph.length) {
         await db('graphs')
-            .where({name: filter})
+            .where(filter)
             .del();
         return graph;
     } else return null;
