@@ -5,7 +5,8 @@ module.exports = {
     get,
     update,
     remove,
-    findBy
+    findBy,
+    dataset
 };
 
 function findBy(filter) {
@@ -13,9 +14,16 @@ function findBy(filter) {
         .where(filter);
 }
 
+function dataset(filter){
+    return db('points as p')
+        .join('datasets as d', 'd.id', 'p.dataset_id')
+        .join('graphs as g', 'g.id', 'd.graph_id')
+        .select('p.data', 'd.graph_id', 'g.name', 'g.user_id')
+        .where(filter)
+}
 
-function add(point) {
-    return db('points')
+async function add(point) {
+    return await db('points')
         .insert(point)
         .then(([id]) => {
             return findBy({id})
@@ -34,13 +42,9 @@ function update(filter, changes) {
         .update(changes)
 }
 
-
-async function remove(filter) {
-    const points = await findBy({name: filter});
-    if (points.length) {
-        await db('points')
-            .where({name: filter})
-            .del();
-        return points;
-    } else return null;
+function remove(filter) {
+    return db('points')
+        .where(filter)
+        .del();
 }
+

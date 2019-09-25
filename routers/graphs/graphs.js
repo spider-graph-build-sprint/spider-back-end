@@ -12,44 +12,27 @@ router.post('/', validateGraph, graph, legs, (req, res) => {
         name: req.graph_id.name,
         legs: req.legs,
     };
-    res.status(200).json(graph);
+    res.status(200).json(graph)
 });
 
 router.get('/', (req, res) => {
     // get all graphs of the user
-    const user_id = req.user.id;
     let graphs = [];
-    let legs = [];
-    graphsDB.findBy({user_id})
-        .then((g_arr )=> {
-            g_arr.forEach(async (g, index) =>{
-                await legsDB.findBy({graph_id: g.id})
-                    .then(legs_arr =>{
-                        legs_arr.forEach((leg, index) =>{
-                            legs = [...legs, leg.name];
-                            if(legs_arr.length-1 === index){
-                                graphs = [...graphs, {name: g.name, legs: legs}];
-                                legs = [];
-                                console.log("legs", graphs);
-                            }
-                        })
-                    })
-                    .catch(err => res.status(500).json({error: "Server could not retrieve legs"}))
-                if(g_arr.length-1 === index){
-                    console.log(graphs);
-                    res.status(200).json(graphs);
-                }
-            });
+    const user_id = req.user.id;
+    pointsDB.dataset({user_id})
+        .then(datasets => {
+            res.status(200).json(datasets)
         })
-        .catch(err => res.status(500).json({error: "Server could not retrieve graphs"}))
+        .catch(err => res.status(500).json({error: "Server could not"}))
+
 });
 
-router.put('/:name', validatePath, checkIfGraphExists, graphUpdate, legsDelete, legs, (req, res) => {
+router.put('/:name', validateGraph, validatePath, checkIfGraphExists, graphUpdate, legsDelete, legs, (req, res) => {
     const graph = {
         name: "",
         legs: req.legs,
     };
-    graphsDB.findBy({name: req.body.name})
+    graphsDB.findBy({name: req.body.name, user_id: req.user.id})
         .then(([g]) => {
             graph.name = g.name;
             res.status(200).json(graph);
@@ -57,15 +40,10 @@ router.put('/:name', validatePath, checkIfGraphExists, graphUpdate, legsDelete, 
         .catch(err => res.status(500).json({error: "Server could not retrieve a graph"}));
 });
 
-router.delete('/:name', validatePath, (req, res) => {
-    const name = req.params.name;
-    graphsDB.remove({name, user_id: req.user.id})
-        .then(graph => {
-            if (graph) {
-                const [data] = graph;
-                res.status(200).json(data)
-            } else res.status(200).json(graph)
-        })
+router.delete('/:name', validatePath, checkIfGraphExists, (req, res) => {
+    console.log({name: req.graph_id.name, user_id: req.user.id});
+    graphsDB.remove({name: req.graph_id.name, user_id: req.user.id})
+        .then(graph => res.status(200).json(graph))
         .catch(err => res.status(500).json({error: "The graph could not be removed"}))
 });
 
@@ -121,9 +99,12 @@ function legs(req, res, next) {
     const legs = req.body.legs;
     const graph_id = req.graph_id.id;
     const legsArr = [];
+    console.log('LEGS', legs);
+    console.log('GRAPH_ID', graph_id);
     legs.forEach((leg, index) => {
         legsDB.add({name: leg, graph_id})
             .then(([leg]) => {
+                console.log('LEG', leg);
                 legsArr.push(leg.name);
                 if (legs.length - 1 === index) {
                     req.legs = legsArr;
@@ -136,11 +117,12 @@ function legs(req, res, next) {
 
 function legsDelete(req, res, next) {
     const graph_id = req.graph_id.id;
-
+    console.log(graph_id);
     legsDB.findBy({graph_id})
         .then(ls => {
             ls.forEach((leg) => {
-                legsDB.remove(leg.name)
+                console.log('leg ', leg);
+                legsDB.remove({name: leg.name, graph_id})
                     .then(count => {
                         if (!count) {
                             res.status(400).json(count)
@@ -150,7 +132,7 @@ function legsDelete(req, res, next) {
             });
             next();
         })
-        .catch(err => res.status(500).json({error: "Server could not retrieve legs"}));
+        .catch(err => res.status(404).json({errorMessage: "The legs with the specified ID does not exist."}))
 }
 
 
@@ -187,7 +169,6 @@ function validatePath(req, res, next) {
 }
 
 function validateGraph(req, res, next) {
-    console.log(req.body);
     if (!req.body) {
         res.status(400).json({errorMessage: "Missing graph data."})
     } else if (!req.body.name && !req.body.legs) {

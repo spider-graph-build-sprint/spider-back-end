@@ -42,10 +42,10 @@ function update(filter, changes) {
 
 
 async function remove(filter) {
-    const datasets = await findBy({name: filter});
+    const datasets = await findBy({name: filter.name});
     if (datasets.length) {
         await db('datasets')
-            .where({name: filter})
+            .where(filter)
             .del();
         return datasets;
     } else return null;
