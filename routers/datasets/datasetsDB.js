@@ -37,8 +37,10 @@ function get() {
 function update(filter, changes) {
     return db('datasets')
         .where(filter)
-        .update(changes)
+        .update({...changes}, ['id'])
 }
+
+
 
 
 async function remove(filter) {

@@ -39,7 +39,7 @@ function get() {
 function update(filter, changes) {
     return db('graphs')
         .where(filter)
-        .update(changes)
+        .update({...changes}, ['id'])
 }
 
 

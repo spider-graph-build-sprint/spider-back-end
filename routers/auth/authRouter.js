@@ -8,7 +8,6 @@ router.post('/register', (req, res) => {
     const user = req.body;
     const hash = bcrypt.hashSync(user.password, 10);
     user.password = hash;
-    console.log('Hi I am here ',req.body);
     if (user) {
         db.add(user)
             .then(user => res.status(201).json(user[0]))

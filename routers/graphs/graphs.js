@@ -5,7 +5,7 @@ const datasetsDB = require('../datasets/datasetsDB');
 const pointsDB = require('../points/pointsDB');
 const db = require('../../data/dbConfig');
 
-//Endpoints
+
 
 router.post('/', validateGraph, graph, legs, (req, res) => {
     const graph = {
@@ -14,6 +14,7 @@ router.post('/', validateGraph, graph, legs, (req, res) => {
     };
     res.status(200).json(graph)
 });
+
 
 router.get('/:name', async (req, res) => {
     let graphs = [];
@@ -63,6 +64,7 @@ router.get('/:name', async (req, res) => {
         .catch(err => res.status(500).json({error: "Server could no retrieve graphs."}))
 
 });
+
 
 router.get('/', (req,res) => {
    graphsDB.findBy({user_id: req.user.id})
@@ -137,6 +139,7 @@ function graphUpdate(req, res, next) {
     graphsDB.update({name: graphTitle, user_id}, {name: newGraphTitle, user_id})
         .then(id => next())
         .catch(err => res.status(500).json({error: "Server could not update a graph"}));
+
 }
 
 function legs(req, res, next) {

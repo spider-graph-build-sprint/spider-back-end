@@ -39,7 +39,7 @@ function get() {
 function update(filter, changes) {
     return db('points')
         .where(filter)
-        .update(changes)
+        .update({...changes}, ['id'])
 }
 
 function remove(filter) {
