@@ -15,16 +15,61 @@ router.post('/', validateGraph, graph, legs, (req, res) => {
     res.status(200).json(graph)
 });
 
-router.get('/', (req, res) => {
-    // get all graphs of the user
+router.get('/:name', async (req, res) => {
     let graphs = [];
-    const user_id = req.user.id;
-    pointsDB.dataset({user_id})
-        .then(datasets => {
-            res.status(200).json(datasets)
-        })
-        .catch(err => res.status(500).json({error: "Server could not"}))
+    let legs_arr = [];
+    let points_arr = [];
+    let datasets_arr = [];
+    await graphsDB.findBy({name: req.params.name, user_id: req.user.id})
+        .then(([graph]) => {
 
+              legsDB.findBy({graph_id: graph.id})
+                    .then(legs => {
+                        legs.forEach((leg, index) => {
+                            legs_arr = [...legs_arr, leg.name];
+                        })
+                    })
+                    .catch(err => res.status(500).json({error: "Server could not retrieve legs."}));
+
+               datasetsDB.findBy({graph_id: graph.id})
+                    .then(datasets => {
+                        if (datasets.length){
+                            datasets.forEach(async (dataset, index) => {
+                                //each dataset has points
+                                await pointsDB.findBy({dataset_id: dataset.id})
+                                    .then(points => {
+                                        points.forEach((point, index) => {
+                                            points_arr = [...points_arr, point.data];
+                                        })
+                                    })
+                                    .catch(err => res.status(500).json({error: "Server could not retrieve points."}));
+
+                                datasets_arr = [...datasets_arr, {name: dataset.name, points: points_arr}];
+                                points_arr = [];
+
+                                if(datasets.length - 1 === index){
+                                    graphs = [...graphs, {name: graph.name, legs: legs_arr, datasets: datasets_arr}];
+                                    res.status(200).json(graphs)
+                                }
+                            })
+                        } else {
+                            graphs = [...graphs, {name: graph.name, legs: legs_arr, datasets: datasets_arr}];
+                            res.status(200).json(graphs)
+                        }
+
+                    })
+                    .catch(err => res.status(500).json({error: "Server could not retrieve datasets."}));
+        })
+        .catch(err => res.status(500).json({error: "Server could no retrieve graphs."}))
+
+});
+
+router.get('/', (req,res) => {
+   graphsDB.findBy({user_id: req.user.id})
+       .then(graphs => {
+           res.status(200).json(graphs);
+       })
+       .catch(err => res.status(500).json({error: "Server could not retrieve graphs"}))
 });
 
 router.put('/:name', validateGraph, validatePath, checkIfGraphExists, graphUpdate, legsDelete, legs, (req, res) => {
@@ -41,7 +86,6 @@ router.put('/:name', validateGraph, validatePath, checkIfGraphExists, graphUpdat
 });
 
 router.delete('/:name', validatePath, checkIfGraphExists, (req, res) => {
-    console.log({name: req.graph_id.name, user_id: req.user.id});
     graphsDB.remove({name: req.graph_id.name, user_id: req.user.id})
         .then(graph => res.status(200).json(graph))
         .catch(err => res.status(500).json({error: "The graph could not be removed"}))
@@ -99,29 +143,31 @@ function legs(req, res, next) {
     const legs = req.body.legs;
     const graph_id = req.graph_id.id;
     const legsArr = [];
-    console.log('LEGS', legs);
-    console.log('GRAPH_ID', graph_id);
-    legs.forEach((leg, index) => {
-        legsDB.add({name: leg, graph_id})
-            .then(([leg]) => {
-                console.log('LEG', leg);
-                legsArr.push(leg.name);
-                if (legs.length - 1 === index) {
-                    req.legs = legsArr;
-                    next();
-                }
-            })
-            .catch(err => res.status(500).json({error: "Server could not add a leg"}))
-    });
+
+    if(legs.length){
+        legs.forEach((leg, index) => {
+            legsDB.add({name: leg, graph_id})
+                .then(([leg]) => {
+                    legsArr.push(leg.name);
+                    if (legs.length - 1 === index) {
+                        req.legs = legsArr;
+                        next();
+                    }
+                })
+                .catch(err => res.status(500).json({error: "Server could not add a leg"}))
+        });
+    }else {
+        req.legs = legsArr;
+        next();
+    }
+
 }
 
 function legsDelete(req, res, next) {
     const graph_id = req.graph_id.id;
-    console.log(graph_id);
     legsDB.findBy({graph_id})
         .then(ls => {
             ls.forEach((leg) => {
-                console.log('leg ', leg);
                 legsDB.remove({name: leg.name, graph_id})
                     .then(count => {
                         if (!count) {
@@ -133,29 +179,6 @@ function legsDelete(req, res, next) {
             next();
         })
         .catch(err => res.status(404).json({errorMessage: "The legs with the specified ID does not exist."}))
-}
-
-
-function datasets(req, res, next) {
-    const datasets = req.body.datasets;
-    const graph_id = req.graph_id.id;
-    datasets.forEach(dataset => {
-        datasetsDB
-            .add({name: dataset.title, graph_id})
-            .then(([id]) => {
-                dataset.points.forEach(point => {
-                    pointsDB
-                        .add({data: point, dataset_id: id.id})
-                        .then(data => {
-                            req.points = [...req.points, data.data];
-                            console.log('point ', data)
-                        })
-                        .catch(err => res.status(500).json({error: "Server could not add a point"}))
-                })
-            })
-            .catch(err => res.status(500).json({error: "Server could not add a dataset"}))
-    });
-    next();
 }
 
 function validatePath(req, res, next) {

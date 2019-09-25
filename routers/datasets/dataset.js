@@ -69,7 +69,6 @@ function dataset(req, res, next) {
 
     datasetsDB.findBy({name: datasetTitle, graph_id})
         .then(([data]) => {
-            console.log('graph_id', graph_id);
             if (!data) {
                 datasetsDB.add(dataset)
                     .then(([created_dataset]) => {
@@ -97,7 +96,6 @@ function points(req, res, next) {
     const points = req.body.points;
     const dataset_id = req.dataset.id;
     const pointsArr = [];
-    console.log('points ', points, 'dataset_id ', dataset_id);
     points.forEach((point, index) => {
         pointsDB.add({data: point, dataset_id})
             .then(([point]) => {
