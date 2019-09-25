@@ -21,13 +21,14 @@ function findByGraph(filter) {
 }
 
 
-function add(leg) {
-    return db('legs')
+async function add(leg) {
+    return await db('legs')
         .insert(leg)
         .then(([id]) => {
             return findBy({id})
         });
 }
+
 
 
 function get() {
@@ -42,13 +43,8 @@ function update(filter, changes) {
         .update(changes)
 }
 
-
-async function remove(filter) {
-    const legs = await findBy({name: filter});
-    if (legs.length) {
-        await db('legs')
-            .where({name: filter})
-            .del();
-        return legs;
-    } else return null;
+function remove(filter) {
+    return db('legs')
+        .where(filter)
+        .del();
 }

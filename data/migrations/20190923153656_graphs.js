@@ -66,4 +66,5 @@ exports.down = function (knex) {
         .dropTableIfExists('graphs')
         .dropTableIfExists('legs')
         .dropTableIfExists('datasets')
+        .dropTableIfExists('points')
 };

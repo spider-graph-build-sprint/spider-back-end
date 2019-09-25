@@ -42,8 +42,9 @@ function update(filter, changes) {
         .update(changes)
 }
 
+
 async function remove(filter) {
-    const graph = await findBy({name: filter.name});
+    const graph = await findBy(filter);
     if (graph.length) {
         await db('graphs')
             .where(filter)
