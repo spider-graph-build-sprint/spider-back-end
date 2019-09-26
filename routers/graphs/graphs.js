@@ -6,7 +6,6 @@ const pointsDB = require('../points/pointsDB');
 const db = require('../../data/dbConfig');
 
 
-
 router.post('/', validateGraph, graph, legs, (req, res) => {
     const graph = {
         name: req.graph_id.name,
@@ -23,45 +22,47 @@ router.get('/:name', async (req, res) => {
     let datasets_arr = [];
     await graphsDB.findBy({name: req.params.name, user_id: req.user.id})
         .then(([graph]) => {
-
-              legsDB.findBy({graph_id: graph.id})
-                    .then(legs => {
-                        legs.forEach((leg, index) => {
-                            legs_arr = [...legs_arr, leg.name];
-                        })
+            console.log('GRAPH ', graph);
+            legsDB.findBy({graph_id: graph.id})
+                .then(legs => {
+                    legs.forEach((leg, index) => {
+                        legs_arr = [...legs_arr, leg.name];
                     })
-                    .catch(err => res.status(500).json({error: "Server could not retrieve legs."}));
+                })
+                .catch(err => res.status(500).json({error: "Server could not retrieve legs."}));
 
-               datasetsDB.findBy({graph_id: graph.id})
-                    .then(datasets => {
-                        if (datasets.length){
-                            datasets.forEach(async (dataset, index) => {
-                                //each dataset has points
-                                await pointsDB.findBy({dataset_id: dataset.id})
-                                    .then(points => {
-                                        points.forEach((point, index) => {
-                                            points_arr = [...points_arr, point.data];
-                                        })
+            datasetsDB.findBy({graph_id: graph.id})
+                .then(datasets => {
+                    console.log('DATASETS ', datasets);
+                    if (datasets.length) {
+                        datasets.forEach(async (dataset, index) => {
+                            //each dataset has points
+                            await pointsDB.findBy({dataset_id: dataset.id})
+                                .then(points => {
+                                    console.log('POINTS ', points);
+                                    points.forEach((point, index) => {
+                                        points_arr = [...points_arr, point.data];
                                     })
-                                    .catch(err => res.status(500).json({error: "Server could not retrieve points."}));
+                                })
+                                .catch(err => res.status(500).json({error: "Server could not retrieve points."}));
 
-                                datasets_arr = [...datasets_arr, {name: dataset.name, points: points_arr}];
-                                points_arr = [];
+                            datasets_arr = [...datasets_arr, {name: dataset.name, points: points_arr}];
+                            points_arr = [];
 
-                                if(datasets.length - 1 === index){
-                                    graphs = [...graphs, {name: graph.name, legs: legs_arr, datasets: datasets_arr}];
-                                    res.status(200).json(graphs)
-                                }
-                            })
-                        } else {
-                            graphs = [...graphs, {name: graph.name, legs: legs_arr, datasets: datasets_arr}];
-                            res.status(200).json(graphs)
-                        }
+                            if (datasets.length - 1 === index) {
+                                graphs = [...graphs, {name: graph.name, legs: legs_arr, datasets: datasets_arr}];
+                                res.status(200).json(graphs)
+                            }
+                        })
+                    } else {
+                        graphs = [...graphs, {name: graph.name, legs: legs_arr, datasets: datasets_arr}];
+                        res.status(200).json(graphs)
+                    }
 
-                    })
-                    .catch(err => res.status(500).json({error: "Server could not retrieve datasets."}));
+                })
+                .catch(err => res.status(500).json({error: "Server could not retrieve datasets."}));
         })
-        .catch(err =>{
+        .catch(err => {
             console.log('err ', err);
             res.status(500).json({error: "Server could no retrieve graphs."})
 
@@ -70,12 +71,12 @@ router.get('/:name', async (req, res) => {
 });
 
 
-router.get('/', (req,res) => {
-   graphsDB.findBy({user_id: req.user.id})
-       .then(graphs => {
-           res.status(200).json(graphs);
-       })
-       .catch(err => res.status(500).json({error: "Server could not retrieve graphs"}))
+router.get('/', (req, res) => {
+    graphsDB.findBy({user_id: req.user.id})
+        .then(graphs => {
+            res.status(200).json(graphs);
+        })
+        .catch(err => res.status(500).json({error: "Server could not retrieve graphs"}))
 });
 
 router.put('/:name', validateGraph, validatePath, checkIfGraphExists, graphUpdate, legsDelete, legs, (req, res) => {
@@ -151,7 +152,7 @@ function legs(req, res, next) {
     const graph_id = req.graph_id.id;
     const legsArr = [];
 
-    if(legs.length){
+    if (legs.length) {
         legs.forEach((leg, index) => {
             legsDB.add({name: leg, graph_id})
                 .then(([leg]) => {
@@ -163,7 +164,7 @@ function legs(req, res, next) {
                 })
                 .catch(err => res.status(500).json({error: "Server could not add a leg"}))
         });
-    }else {
+    } else {
         req.legs = legsArr;
         next();
     }
