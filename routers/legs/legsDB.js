@@ -23,7 +23,7 @@ function findByGraph(filter) {
 
 async function add(leg) {
     return await db('legs')
-        .insert(leg)
+        .insert(leg, 'id')
         .then(([id]) => {
             return findBy({id})
         });

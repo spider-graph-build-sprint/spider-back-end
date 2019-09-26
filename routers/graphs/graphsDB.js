@@ -25,7 +25,7 @@ function getGraph(){
 //create graph
 function add(graph) {
     return db('graphs')
-        .insert(graph)
+        .insert(graph, 'id')
         .then(([id]) => {
             return findBy({id})
         });

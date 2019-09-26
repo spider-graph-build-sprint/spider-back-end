@@ -22,12 +22,11 @@ function findByGraph(filter) {
 
 function add(dataset) {
     return db('datasets')
-        .insert(dataset)
+        .insert(dataset, 'id')
         .then(([id]) => {
             return findBy({id})
         });
 }
-
 
 function get() {
     return db('datasets');
