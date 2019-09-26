@@ -62,11 +62,9 @@ exports.up = function (knex) {
 };
 
 exports.down = function (knex) {
-    return knex.schema  .dropTableIfExists('points')
-        .dropTableIfExists('datasets')
-        .dropTableIfExists('legs')
+    return knex.schema.dropTableIfExists('users')
         .dropTableIfExists('graphs')
-        .dropTableIfExists('users')
-
-
+        .dropTableIfExists('legs')
+        .dropTableIfExists('datasets')
+        .dropTableIfExists('points')
 };

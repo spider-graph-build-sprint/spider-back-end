@@ -5,22 +5,7 @@ const datasetsDB = require('./datasetsDB');
 const pointsDB = require('../points/pointsDB');
 const db = require('../../data/dbConfig');
 
-
-/**
- * @api {post} /api/graphs/${graph_name}/dataset Create a new dataset
- * @apiName PostDataset
- * @apiGroup Datasets
- *
- * @apiParam {String} title Dataset title
- * @apiParam {points[]} points an array of integers
- *
- * @apiParamExample Example Body:
- * {
- *  "title": "dataset1",
- *  "points": [2,3,5]
- * }
- *
- * */
+//Endpoints
 
 router.post('/:graph/dataset', validateDataset, graphFind, dataset, points, (req, res) => {
     const dataset = {
@@ -29,25 +14,6 @@ router.post('/:graph/dataset', validateDataset, graphFind, dataset, points, (req
     };
     res.status(200).json(dataset);
 });
-
-/**
- * @api {put} /api/graphs/${graph_name}/dataset/${dataset_name} Update a dataset
- * @apiName  UpdateDataset
- * @apiGroup Datasets
- *
- * @apiParamExample {json} Request-Example:
- *     {
- *       "title": "dataset1",
- *       "points": [2,3,5]
- *     }
- *
- * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *       "title": "updated_name",
- *       "points": [2,3,5]
- *     }
- * */
 
 router.put('/:graph/dataset/:dataset', validateDataset, graphFind,
     datasetFind, validatePath, datasetUpdate, pointsDelete, points, (req, res) => {
@@ -62,20 +28,6 @@ router.put('/:graph/dataset/:dataset', validateDataset, graphFind,
             })
             .catch(err => res.status(500).json({error: "Server could not retrieve a graph"}));
     });
-
-
-/**
- * @api {delete} /api/graphs/${graph_name}/dataset/${dataset_name} Delete a dataset
- * @apiName  DeleteDataset
- * @apiGroup Datasets
- *
- *
- * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *       "title": "the title of the dataset that was deleted",
- *     }
- * */
 
 router.delete('/:graph/dataset/:dataset', validatePath, graphFind, datasetFind, (req, res) => {
     datasetsDB.remove({name: req.dataset.name, graph_id: req.graph_id})
