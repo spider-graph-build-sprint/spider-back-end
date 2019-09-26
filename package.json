@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "server": "nodemon index.js"
+    "server": "nodemon index.js",
+    "docs": "npx apidoc -i ./routers -e node_modules -o ./docs"
   },
   "repository": {
     "type": "git",

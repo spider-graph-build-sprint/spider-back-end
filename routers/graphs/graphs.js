@@ -5,6 +5,21 @@ const datasetsDB = require('../datasets/datasetsDB');
 const pointsDB = require('../points/pointsDB');
 const db = require('../../data/dbConfig');
 
+/**
+ * @api {post} /api/graphs/ Create a new empty graph
+ * @apiName PostGraph
+ * @apiGroup Graphs
+ *
+ * @apiParam {String} name Graph name
+ * @apiParam {legs[]} legs an array of strings
+ *
+ * @apiParamExample Example Body:
+ * {
+ *  "name": "Name of the graph",
+ *  "legs": ["leg1", "leg1", "leg2"]
+ * }
+ *
+ * */
 
 router.post('/', validateGraph, graph, legs, (req, res) => {
     const graph = {
@@ -14,6 +29,35 @@ router.post('/', validateGraph, graph, legs, (req, res) => {
     res.status(200).json(graph)
 });
 
+/**
+ * @api {get} /api/graphs/${name} Get a graph
+ * @apiName  GetGraph
+ * @apiGroup Graphs
+ *
+ *   @apiSuccessExample Success-Response:
+ *       HTTP/1.1 200 OK
+ *[
+ * {
+ *  "name": "Make tea1",
+ *   "legs": [
+ *    "leg1",
+ *     "leg1",
+ *     "leg2"
+ *   ],
+ *   "datasets": [
+ *     {
+ *       "name": "dataset1",
+ *       "points": [
+ *         2,
+ *         3,
+ *         5
+ *       ]
+ *     }
+ *   ]
+ * }
+ *]
+ *
+ * */
 
 router.get('/:name', async (req, res) => {
     let graphs = [];
@@ -22,7 +66,7 @@ router.get('/:name', async (req, res) => {
     let datasets_arr = [];
     await graphsDB.findBy({name: req.params.name, user_id: req.user.id})
         .then(([graph]) => {
-            console.log('NAME OF THE GRAPH ', req.params.name );
+            console.log('NAME OF THE GRAPH ', req.params.name);
             console.log('GRAPH ', graph);
             legsDB.findBy({graph_id: graph.id})
                 .then(legs => {
@@ -71,6 +115,32 @@ router.get('/:name', async (req, res) => {
 
 });
 
+/**
+ * @api {get} /api/graphs/ Get all graphs
+ * @apiName  GetGraphs
+ * @apiGroup Graphs
+ *
+ *   @apiSuccessExample Success-Response:
+ *       HTTP/1.1 200 OK
+ *[
+ *  {
+ *    "id": 10,
+ *    "name": "my graph3",
+ *    "user_id": 11
+ *  },
+ *  {
+ *    "id": 12,
+ *    "name": "Make tea1",
+ *    "user_id": 11
+ *  },
+ *  {
+ *    "id": 13,
+ *    "name": "Make tea12",
+ *    "user_id": 11
+ *  }
+ *]
+ *
+ * */
 
 router.get('/', (req, res) => {
     graphsDB.findBy({user_id: req.user.id})
@@ -79,6 +149,25 @@ router.get('/', (req, res) => {
         })
         .catch(err => res.status(500).json({error: "Server could not retrieve graphs"}))
 });
+
+/**
+ * @api {put} /api/graphs/${name} Update a graph
+ * @apiName  UpdateGraph
+ * @apiGroup Graphs
+ *
+ * @apiParamExample {json} Request-Example:
+ *     {
+ *       "name": "Make tea12",
+ *       "legs": ["leg1", "leg1", "leg2"]
+ *     }
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "name": "updated name",
+ *       "legs": ["updatedLeg1", "leg1", "leg2"]
+ *     }
+ * */
 
 router.put('/:name', validateGraph, validatePath, checkIfGraphExists, graphUpdate, legsDelete, legs, (req, res) => {
     const graph = {
@@ -92,6 +181,18 @@ router.put('/:name', validateGraph, validatePath, checkIfGraphExists, graphUpdat
         })
         .catch(err => res.status(500).json({error: "Server could not retrieve a graph"}));
 });
+
+/**
+ * @api {delete} /api/graphs/${name} Delete a graph
+ * @apiName  DeleteGraph
+ * @apiGroup Graphs
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "name": "the name of the graph that was deleted",
+ *     }
+ * */
 
 router.delete('/:name', validatePath, checkIfGraphExists, (req, res) => {
     graphsDB.remove({name: req.graph_id.name, user_id: req.user.id})

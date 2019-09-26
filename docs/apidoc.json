@@ -1,0 +1,7 @@
+{
+  "name": "spider-graph",
+  "version": "0.1.0",
+  "description": "This is backend for spider graph application",
+  "title": "Spider graph",
+  "url" : "https://spider-back-end.herokuapp.com/api/"
+}
