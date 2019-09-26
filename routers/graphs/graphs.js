@@ -61,7 +61,11 @@ router.get('/:name', async (req, res) => {
                     })
                     .catch(err => res.status(500).json({error: "Server could not retrieve datasets."}));
         })
-        .catch(err => res.status(500).json({error: "Server could no retrieve graphs."}))
+        .catch(err =>{
+            console.log('err ', err);
+            res.status(500).json({error: "Server could no retrieve graphs."})
+
+        })
 
 });
 
