@@ -22,6 +22,7 @@ router.get('/:name', async (req, res) => {
     let datasets_arr = [];
     await graphsDB.findBy({name: req.params.name, user_id: req.user.id})
         .then(([graph]) => {
+            console.log('NAME OF THE GRAPH ', req.params.name );
             console.log('GRAPH ', graph);
             legsDB.findBy({graph_id: graph.id})
                 .then(legs => {
