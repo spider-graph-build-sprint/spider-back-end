@@ -302,6 +302,7 @@ function validatePath(req, res, next) {
 }
 
 function validateGraph(req, res, next) {
+    console.log('GRAPH ', req.body);
     if (!req.body) {
         res.status(400).json({errorMessage: "Missing graph data."})
     } else if (!req.body.name && !req.body.legs) {
