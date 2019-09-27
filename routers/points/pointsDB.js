@@ -24,7 +24,7 @@ function dataset(filter){
 
 async function add(point) {
     return await db('points')
-        .insert(point, "id")
+        .insert(point, 'id')
         .then(([id]) => {
             return findBy({id})
         });
@@ -39,7 +39,7 @@ function get() {
 function update(filter, changes) {
     return db('points')
         .where(filter)
-        .update(changes)
+        .update({...changes}, ['id'])
 }
 
 function remove(filter) {

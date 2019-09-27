@@ -22,12 +22,11 @@ function findByGraph(filter) {
 
 function add(dataset) {
     return db('datasets')
-        .insert(dataset, "id")
+        .insert(dataset, 'id')
         .then(([id]) => {
             return findBy({id})
         });
 }
-
 
 function get() {
     return db('datasets');
@@ -37,8 +36,10 @@ function get() {
 function update(filter, changes) {
     return db('datasets')
         .where(filter)
-        .update(changes)
+        .update({...changes}, ['id'])
 }
+
+
 
 
 async function remove(filter) {

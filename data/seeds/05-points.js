@@ -1,13 +1,27 @@
+exports.seed = function (knex) {
+    // Deletes ALL existing entries
+    return knex('points').del()
+        .then(function () {
+            return knex('points').insert([
+                {data: 50, dataset_id: 1},
+                {data: 10, dataset_id: 1},
+                {data: 16, dataset_id: 1},
 
-exports.seed = function(knex) {
-  // Deletes ALL existing entries
-  return knex('table_name').del()
-    .then(function () {
-      // Inserts seed entries
-      return knex('table_name').insert([
-        {id: 1, colName: 'rowValue1'},
-        {id: 2, colName: 'rowValue2'},
-        {id: 3, colName: 'rowValue3'}
-      ]);
-    });
+                {data: 50, dataset_id: 2},
+                {data: 10, dataset_id: 2},
+                {data: 16, dataset_id: 2},
+
+                {data: 50, dataset_id: 3},
+                {data: 10, dataset_id: 3},
+                {data: 16, dataset_id: 3},
+
+                {data: 50, dataset_id: 4},
+                {data: 10, dataset_id: 4},
+                {data: 16, dataset_id: 4},
+
+                {data: 50, dataset_id: 5},
+                {data: 10, dataset_id: 5},
+                {data: 16, dataset_id: 5},
+            ]);
+        });
 };

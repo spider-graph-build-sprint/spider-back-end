@@ -6,7 +6,10 @@ module.exports = {
 };
 
 function add(user) {
-    return db('users').insert(user, "id")
+
+    return db('users').insert(user)
+        .returning(['id']);
+
 }
 
 

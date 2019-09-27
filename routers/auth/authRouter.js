@@ -4,11 +4,11 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const secret = require('../../config/secret');
 
+
 router.post('/register', (req, res) => {
     const user = req.body;
     const hash = bcrypt.hashSync(user.password, 10);
     user.password = hash;
-    console.log('Hi I am here ',req.body);
     if (user) {
         db.add(user)
             .then(user => res.status(201).json(user[0]))
@@ -20,6 +20,7 @@ router.post('/register', (req, res) => {
 
 router.post('/login', (req, res) => {
     const {username, password} = req.body;
+    console.log('USER ', req.body);
     if (username && password) {
         db.findBy({username})
             .first()

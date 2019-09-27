@@ -25,7 +25,7 @@ function getGraph(){
 //create graph
 function add(graph) {
     return db('graphs')
-        .insert(graph, "id")
+        .insert(graph, 'id')
         .then(([id]) => {
             return findBy({id})
         });
@@ -39,7 +39,7 @@ function get() {
 function update(filter, changes) {
     return db('graphs')
         .where(filter)
-        .update(changes)
+        .update({...changes}, ['id'])
 }
 
 
