@@ -14,7 +14,7 @@ Users in the database conform to the following object structure:
 }
 ```
 
-###Endpoints for the user
+### Endpoints for the user
 
 | Method  |      URL           |     Description                |
 | ------- | ------------------ |------------------------------- | 
@@ -23,9 +23,9 @@ Users in the database conform to the following object structure:
 
 ### Graph
 
-###Graph
+### Graph
 
- ####Create a new graph
+ #### Create a new graph
 `/api/graphs/`
  
  **Payload:** _an object with the following credentials:_
@@ -38,7 +38,7 @@ Users in the database conform to the following object structure:
  }
 ```
 
- ####Get graph
+ #### Get graph
 `/api/graphs/${name}`
  
  **Success-Response:** 
@@ -59,7 +59,7 @@ Users in the database conform to the following object structure:
 }]
 ```
 
- ####Get graphs
+ #### Get graphs
 `/api/graphs/`
  
  **Success-Response:** 
@@ -84,7 +84,7 @@ Users in the database conform to the following object structure:
     
 ```
 
- ####Update graph
+ #### Update graph
 `/api/graphs/${name}`
 
  **Payload:** _an object with the following credentials:_
@@ -97,7 +97,7 @@ Users in the database conform to the following object structure:
  }
 ``` 
 
-####Delete graph
+#### Delete graph
 `/api/graphs/${name}`
  
  **Success-Response:** 
@@ -107,8 +107,8 @@ Users in the database conform to the following object structure:
   }
 ```
 
-###Dataset
- ####Create a new dataset
+### Dataset
+ #### Create a new dataset
 ` /api/graphs/${graph_name}/dataset `
  
  **Payload:** _an object with the following credentials:_
@@ -120,7 +120,7 @@ Users in the database conform to the following object structure:
    "points": [2,3,5]
   }
 ```
- ####Update dataset 
+ #### Update dataset 
 ` /api/graphs/${graph_name}/dataset/${dataset_name}`
 
  **Payload:** _an object with the following credentials:_
@@ -132,7 +132,7 @@ Users in the database conform to the following object structure:
    "points": [2,3,5]
   }
 ``` 
-####Delete dataset 
+#### Delete dataset 
 ` /api/graphs/${graph_name}/dataset/${dataset_name}`
  
  **Success-Response:** 
